@@ -1,0 +1,87 @@
+<button class="btn btn-primary d-md-none" (click)="toggleSidebar()" style="position: fixed; top: 15px; left: 15px; z-index: 1050;">
+  <i class="fa-solid fa-bars"></i>
+</button>
+
+<div class="d-flex layout-wrapper" [class.sidebar-abierto]="isSidebarOpen">
+  <!-- SIDEBAR restaurado con diseño original -->
+  <aside class="app-sidebar bg-dark text-white p-3 vh-100 d-flex flex-column">
+    <!-- Panel de Usuario -->
+    <div class="text-center mb-4">
+      <img src="img/user-avatar.png" alt="Usuario" class="img-fluid rounded-circle mb-2" style="width: 80px;">
+      <h6 class="text-white mb-0">¡Hola, {{userName}}!</h6>
+    </div>
+
+    <!-- Menú de Navegación -->
+    <nav>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-link text-white d-flex align-items-center">
+            <i class="fa-solid fa-home me-2" style="width: 20px;"></i>
+            <span class="flex-grow-1">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/venta" routerLinkActive="active" class="nav-link text-white d-flex align-items-center">
+            <i class="fa-solid fa-receipt me-2" style="width: 20px;"></i>
+            <span class="flex-grow-1">Ventas</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/compra" routerLinkActive="active" class="nav-link text-white d-flex align-items-center">
+            <i class="fa-solid fa-shopping-cart me-2" style="width: 20px"></i>
+            <span class="flex-grow-1">Compras</span>
+          </a>
+        <li class="nav-item">
+          <a routerLink="/inventario" routerLinkActive="active" class="nav-link text-white d-flex align-items-center">
+            <i class="fa-solid fa-boxes-stacked me-2" style="width: 20px;"></i>
+            <span class="flex-grow-1">Inventario</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/productos" routerLinkActive="active" class="nav-link text-white d-flex align-items-center">
+            <i class="fa-solid fa-boxes-stacked me-2" style="width: 20px;"></i>
+            <span class="flex-grow-1">Productos</span>
+          </a>
+        </li>
+
+        <!-- Separador -->
+        <hr class="text-white my-3">
+
+        <li class="nav-item">
+          <a routerLink="/estadisticas" routerLinkActive="active" class="nav-link text-white d-flex align-items-center">
+            <i class="fa-solid fa-chart-line me-2" style="width: 20px;"></i>
+            <span class="flex-grow-1">Estadísticas</span>
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin">
+          <a routerLink="/admin" routerLinkActive="active" class="nav-link text-white d-flex align-items-center">
+            <i class="fa-solid fa-users me-2" style="width: 20px;"></i>
+            <span class="flex-grow-1">Empleados</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/configuracion" routerLinkActive="active" class="nav-link text-white d-flex align-items-center">
+            <i class="fa-solid fa-gear me-2" style="width: 20px;"></i>
+            <span class="flex-grow-1">Configuración</span>
+          </a>
+        </li>
+
+        <!-- Separador -->
+        <hr class="text-white my-3">
+
+        <!-- Botón de Cerrar Sesión -->
+        <li class="nav-item mt-auto">
+          <a routerLink="/login" class="nav-link text-white d-flex align-items-center" (click)="logout()">
+            <i class="fa-solid fa-sign-out-alt me-2" style="width: 20px;"></i>
+            <span class="flex-grow-1">Cerrar Sesión</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="flex-grow-1 p-4 bg-light">
+    <router-outlet></router-outlet>
+  </main>
+</div>

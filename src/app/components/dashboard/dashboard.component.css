@@ -1,0 +1,39 @@
+.card {
+    border-radius: 15px;
+  }
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+  .card-text {
+    font-weight: bold;
+  }
+  .list-group-item {
+    font-size: 1rem;
+  }
+
+  .nav-link {
+    padding: 12px 15px;
+    border-radius: 10px;
+    transition: background 0.3s, color 0.3s;
+  }
+  .nav-link:hover {
+    background-color: #0d6efd; /* Azul de Bootstrap */
+    color: #fff;
+  }
+
+  /* ... (Tus estilos existentes) ... */
+
+/*
+ * Efecto "Lift-Up" (Hover) para las tarjetas de estadísticas
+ */
+.stat-card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stat-card-hover:hover {
+  transform: translateY(-5px); /* Mueve la tarjeta 5px hacia arriba */
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; /* Aumenta la sombra */
+}
+
+  

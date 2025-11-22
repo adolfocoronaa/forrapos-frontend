@@ -1,0 +1,258 @@
+/* @import 'bootstrap/dist/css/bootstrap.min.css'; <--- LÍNEA ELIMINADA */
+
+/* src/styles.css */
+
+/* 1. Variables para MODO CLARO (default) */
+:root {
+  --bg-color: #f8f9fa; /* Fondo principal (era bg-light) */
+  --text-color: #212529; /* Texto principal */
+  --text-color-muted: #6c757d; /* Texto gris */
+  --card-bg: #ffffff; /* Fondo de tarjetas, inputs, etc. */
+  --border-color: #dee2e6;
+  
+  --sidebar-bg: #212529; /* Sidebar (era bg-dark) */
+  --sidebar-text: #ffffff; /* Texto del sidebar */
+  --sidebar-icon-color: #ffffff;
+  --sidebar-link-active: #0d6efd; /* Color de link activo */
+  --table-bg: #ffffff;
+  --table-stripe-color: rgba(0, 0, 0, 0.05);
+}
+
+/* 2. Variables para MODO OSCURO */
+body.dark-mode {
+  --bg-color: #131314; /* Tono de Gemini (casi negro) */
+  --text-color: #E3E3E3; /* Texto de Gemini (blanco suave) */
+  --text-color-muted: #94999F; /* Gris de Gemini */
+  --card-bg: #1E1F20; /* Color de tarjeta de Gemini */
+  --border-color: #3C4043; /* Borde de Gemini */
+
+  /* El sidebar ya es oscuro, quizás solo ajustas el texto activo */
+  --sidebar-bg: #1a1a1a; /* Un negro un poco más suave si quieres */
+  --sidebar-text: #f0f0f0;
+  --sidebar-icon-color: #f0f0f0;
+  --sidebar-link-active: #3399ff;
+  
+  /* Esto hace que todos los componentes de Bootstrap se adapten */
+  --bs-body-color: var(--text-color);
+  --bs-body-bg: var(--bg-color);
+  --bs-emphasis-color: var(--text-color);
+  --bs-secondary-bg: var(--card-bg);
+  --bs-tertiary-bg: var(--card-bg);
+  --bs-border-color: var(--border-color);
+  --bs-heading-color: #BDBDBD; /* <-- CAMBIADO: Define un color gris suave para títulos */
+  --table-bg: var(--card-bg); /* Usamos el color de tarjeta para la tabla */
+  --table-stripe-color: rgba(255, 255, 255, 0.03); /* Un poco más sutil */
+}
+
+/* 3. Transición suave */
+/* AÑADIMOS .card, .modal-content, etc. a la transición */
+body, .nav-link, aside, main, .card, .modal-content, .form-control, .table, .accordion-button {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 4. Estilos semánticos (Tu código original - está perfecto) */
+.app-sidebar {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  width: 250px;
+}
+/* ... (tu código de .app-sidebar) ... */
+.app-sidebar .nav-link {
+  color: var(--sidebar-text);
+}
+.app-sidebar .nav-link i {
+  color: var(--sidebar-icon-color);
+}
+.app-sidebar .nav-link.active {
+  background-color: var(--sidebar-link-active);
+  color: #ffffff;
+}
+
+.app-main-content {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  flex-grow: 1;
+  padding: 1.5rem; /* p-4 */
+}
+
+/* ========================================================= */
+/* 5. CORRECCIONES Y COMPLEMENTOS (LO NUEVO)               */
+/* ========================================================= */
+
+/*
+  CORRECCIÓN #1: Forzar el fondo principal
+*/
+html, body, app-root {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color);
+  min-height: 100vh;
+}
+
+/*
+  CORRECCIÓN #2: Reglas para componentes de Bootstrap en MODO OSCURO
+  Esto arreglará tablas, modales, inputs y paginación.
+*/
+
+/* --- Texto general --- */
+/* Esta regla ahora solo aplica a p, label, etc. Los H1-H6 usarán --bs-heading-color */
+body.dark-mode p,
+body.dark-mode label,
+body.dark-mode .form-label {
+  color: var(--text-color);
+}
+body.dark-mode .text-muted {
+  color: var(--text-color-muted) !important;
+}
+
+/* --- Cards y Modales --- */
+body.dark-mode .card,
+body.dark-mode .modal-content,
+body.dark-mode .dropdown-menu {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+  border-bottom-color: var(--border-color);
+  border-top-color: var(--border-color);
+}
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100) brightness(200%);
+}
+body.dark-mode .dropdown-item {
+  color: var(--text-color);
+}
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .dropdown-item:focus {
+  background-color: var(--sidebar-link-active);
+  color: var(--sidebar-text);
+}
+body.dark-mode .dropdown-divider {
+  border-top-color: var(--border-color);
+}
+
+/* --- Formularios --- */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+body.dark-mode .form-control::placeholder {
+  color: var(--text-color-muted);
+}
+body.dark-mode .input-group-text {
+  background-color: var(--border-color);
+  color: var(--text-color-muted);
+  border-color: var(--border-color);
+}
+
+/* --- Tablas --- */
+body.dark-mode .table {
+  color: var(--text-color);
+  border-color: var(--border-color);
+  background-color: var(--table-bg);
+}
+body.dark-mode .table th,
+body.dark-mode .table td {
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: var(--table-stripe-color);
+}
+body.dark-mode .table-hover > tbody > tr:hover > * {
+  background-color: var(--table-hover-color);
+}
+
+/* ¡¡ESTA ES LA REGLA CLAVE QUE FALTABA!! */
+/* Arregla .table-light en (ventas/compras.component.html) */
+body.dark-mode .table-light {
+  --bs-table-bg: #2c2c2c; /* Un gris oscuro para la cabecera */
+  --bs-table-color: var(--text-color);
+  border-color: var(--border-color);
+}
+body.dark-mode .table-dark {
+   background-color: #454d55;
+   border-color: var(--border-color);
+}
+body.dark-mode .table-warning {
+  --bs-table-bg: #4d3800;
+  --bs-table-color: #fff;
+  --bs-table-striped-bg: #5a4400;
+  --bs-table-hover-bg: #685100;
+}
+
+/* --- Paginación (Ventas/Compras) --- */
+body.dark-mode .pagination .page-link {
+  background-color: var(--card-bg);
+  color: var(--sidebar-link-active);
+  border-color: var(--border-color);
+}
+body.dark-mode .pagination .page-item.active .page-link {
+  background-color: var(--sidebar-link-active);
+  border-color: var(--sidebar-link-active);
+  color: var(--sidebar-text);
+}
+body.dark-mode .pagination .page-item.disabled .page-link {
+  background-color: var(--border-color);
+  color: var(--text-color-muted);
+  border-color: var(--border-color);
+}
+
+/* --- Acordeón (Ventas/Compras) --- */
+body.dark-mode .accordion-item {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+body.dark-mode .accordion-button {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+body.dark-mode .accordion-button:not(.collapsed) {
+  background-color: var(--border-color);
+  color: var(--text-color);
+}
+body.dark-mode .accordion-button::after {
+  filter: invert(1) grayscale(100) brightness(200%);
+}
+
+/* --- Pestañas (Estadísticas) --- */
+body.dark-mode .nav-tabs .nav-link {
+  color: var(--text-color-muted);
+  border-color: transparent;
+}
+body.dark-mode .nav-tabs .nav-link.active {
+  color: var(--text-color);
+  background-color: var(--card-bg);
+  border-color: var(--border-color) var(--border-color) var(--card-bg);
+}
+body.dark-mode .nav-tabs {
+  border-bottom-color: var(--border-color);
+}
+
+/* --- Dropzone (Productos) --- */
+body.dark-mode .drop-zone {
+  background-color: var(--border-color);
+  border-color: var(--text-color-muted);
+  color: var(--text-color-muted);
+}
+
+/* ELIMINAMOS ESTA REGLA DUPLICADA */
+/*
+.app-main-content h1,
+.app-main-content h2,
+.app-main-content h3,
+.app-main-content h4,
+.app-main-content h5,
+.app-main-content h6 {
+  color: var(--text-color) !important;
+}
+*/
+

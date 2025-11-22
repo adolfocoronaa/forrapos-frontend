@@ -1,0 +1,48 @@
+<!-- ===============================
+  Página de Administración de Usuarios
+  Descripción: Muestra una tabla de usuarios con la posibilidad de editar su rol.
+  Fecha: 20/03/2025
+  Dependencias: Angular, Bootstrap
+====================================-->
+
+<div class="container">
+  <!-- Título principal de la sección -->
+  <h2>Administración de Usuarios</h2>
+
+  <!-- Tabla de usuarios -->
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <!-- Encabezados de la tabla -->
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Iteración sobre la lista de usuarios mediante *ngFor -->
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <!-- Selector de rol bidireccional usando ngModel -->
+            <select [(ngModel)]="user.rol">
+              <option value="Empleado">Empleado</option>
+              <option value="Administrador">Administrador</option>
+            </select>
+          </td>
+          <td>
+            <!-- Botón que actualiza el rol del usuario -->
+            <button class="btn btn-primary" (click)="updateRole(user.id, user.rol)">
+              Actualizar Rol
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

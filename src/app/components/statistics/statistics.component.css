@@ -1,0 +1,24 @@
+/* * Contenedor para la gráfica para que sea responsive.
+ * Mantiene la relación de aspecto de la gráfica.
+ */
+.chart-container {
+  position: relative;
+  height: 350px; /* Altura base de las gráficas */
+  width: 100%;
+}
+
+/* Estilos para las pestañas */
+.nav-link {
+  cursor: pointer;
+  color: #0d6efd; /* Azul de Bootstrap */
+}
+
+.nav-link.active {
+  color: #495057; /* Texto oscuro */
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.nav-link:not(.active):hover {
+  background-color: #f8f9fa; /* Fondo claro al pasar el mouse */
+}

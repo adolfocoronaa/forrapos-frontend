@@ -1,0 +1,91 @@
+<div class="container mt-4">
+  <h3 class="mb-3">Movimientos de Inventario</h3>
+
+  <!-- Formulario -->
+  <div class="card mb-4 shadow-sm" *ngIf="isAdmin">
+    <div class="card-body">
+      <form (ngSubmit)="registrarMovimiento()" #form="ngForm">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label">Producto</label>
+            <select class="form-select" [(ngModel)]="nuevoMovimiento.productoId" name="productoId" required>
+              <option *ngFor="let p of productos" [value]="p.id">{{ p.name }} — stock: {{ p.stock }}</option>
+            </select>
+            <div *ngIf="cargandoProductos" class="form-text">Cargando productos...</div>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Tipo</label>
+            <select class="form-select" [(ngModel)]="nuevoMovimiento.tipo" name="tipo" required>
+              <option value="ENTRADA">ENTRADA</option>
+              <option value="SALIDA">SALIDA</option>
+              <option value="AJUSTE">AJUSTE</option>
+              <option value="DEVOLUCION">DEVOLUCIÓN</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Cantidad</label>
+            <input type="number" class="form-control" [(ngModel)]="nuevoMovimiento.cantidad" name="cantidad" min="1" required />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Observación</label>
+            <input class="form-control" [(ngModel)]="nuevoMovimiento.observacion" name="observacion" />
+          </div>
+
+          <div class="col-md-1 d-grid">
+            <button class="btn btn-primary" [disabled]="registrando" type="submit">
+              {{ registrando ? 'Guardando...' : 'Registrar' }}
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div *ngIf="mensaje" class="mt-2">
+        <div class="alert alert-info p-2">{{ mensaje }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de movimientos -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">Historial reciente</h5>
+
+      <div *ngIf="cargandoMovimientos" class="mb-2">Cargando movimientos...</div>
+
+      <div *ngIf="!movimientos.length && !cargandoMovimientos" class="text-muted">
+        No hay movimientos registrados.
+      </div>
+
+      <div class="table-responsive" *ngIf="movimientos.length">
+        <table class="table table-sm table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Tipo</th>
+              <th>Cantidad</th>
+              <th>Stock (actual)</th>
+              <th>Observación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of movimientos">
+              <td>{{ m.fecha ? (m.fecha | date: 'short') : '-' }}</td>
+              <td>{{ m.producto?.name ?? nombreProducto(m.productoId) }}</td>
+              <td [ngClass]="{'text-success': m.tipo === 'ENTRADA', 'text-danger': m.tipo === 'SALIDA'}">{{ m.tipo }}</td>
+              <td>{{ m.cantidad }}</td>
+              <td>
+                <!-- si el backend incluye el producto con stock, lo mostramos; si no, mostramos dash -->
+                {{ m.producto?.stock ?? '-' }}
+              </td>
+              <td>{{ m.observacion ?? '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

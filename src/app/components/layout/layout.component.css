@@ -1,0 +1,51 @@
+/* --- Estilos para Escritorio (md y más grande, > 768px) --- */
+
+.app-sidebar {
+  width: 250px;       /* Tu ancho fijo original */
+  flex-shrink: 0;   /* Evita que se encoja */
+  transition: transform 0.3s ease-in-out; /* Animación suave */
+}
+
+main {
+  /* En escritorio, el contenido principal se ajusta solo */
+  flex-grow: 1;
+  overflow-x: auto; /* Buena práctica por si el contenido es muy ancho */
+}
+
+
+/* --- Estilos para Móvil (sm y más pequeño, < 768px) --- */
+@media (max-width: 767.98px) {
+  
+  /* En móvil, el sidebar se sale del flujo (position: fixed)
+    y se oculta fuera de la pantalla (transform).
+  */
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1040; /* Debajo del botón hamburguesa */
+    
+    /* Oculto por defecto (movido 100% a la izquierda) */
+    transform: translateX(-100%); 
+  }
+
+  /* El contenido principal ahora ocupa el 100% del ancho,
+    porque el sidebar ya no está en el flujo de 'd-flex'.
+  */
+  main {
+    /* Añadimos un 'padding-top' para que el botón hamburguesa
+      no tape el contenido de la página.
+    */
+    padding-top: 70px !important; 
+  }
+
+  /* --- ESTADO ABIERTO (en móvil) --- */
+  
+  /* Cuando el wrapper tiene la clase '.sidebar-abierto',
+    movemos el sidebar a su posición visible (transform 0).
+  */
+  .layout-wrapper.sidebar-abierto .app-sidebar {
+    transform: translateX(0);
+  }
+}

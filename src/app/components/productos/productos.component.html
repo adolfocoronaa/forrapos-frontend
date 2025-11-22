@@ -1,0 +1,313 @@
+<div class="container-fluid mt-4">
+  <h2 class="mb-3">Gestión de Productos</h2>
+
+  <!-- Barra de Acciones -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <!-- Este botón ahora abre el modal de producto -->
+      <button class="btn btn-primary" (click)="abrirModalCrear()" *ngIf="isAdmin">
+        <i class="bi bi-plus-circle"></i> Nuevo Producto
+      </button>
+    </div>
+    <div class="col-md-6">
+      <!-- 
+        ¡AQUÍ ESTÁ EL CAMBIO! 
+        - [(ngModel)]="terminoBusqueda" : Vincula el valor del input a la variable 'terminoBusqueda'.
+        - (ngModelChange)="filtrarProductos()" : Llama a la función 'filtrarProductos' CADA VEZ que el valor cambia.
+      -->
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar producto ..."
+        [(ngModel)]="terminoBusqueda"
+        (ngModelChange)="filtrarProductos()"
+      />
+    </div>
+  </div>
+
+  <!-- Tabla de Productos -->
+  <div class="table-responsive shadow-sm">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Imagen</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Stock</th>
+          <th scope="col" class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let producto of productos">
+          <td>
+            <img
+              [src]="
+                producto.imagenUrl
+                  ? producto.imagenUrl
+                  : 'assets/placeholder.png'
+              "
+              [alt]="producto.name"
+              class="img-thumbnail"
+              style="width: 60px; height: 60px; object-fit: cover"
+            />
+          </td>
+          <td class="text-nowrap">
+            <strong>{{ producto.name }}</strong>
+          </td>
+          <!-- Usamos 'descripcion' del modelo -->
+          <td>
+            {{ producto.descripcion | slice : 0 : 50
+            }}{{ producto.descripcion && producto.descripcion.length > 50 ? '...' : '' }}
+          </td>
+          <td>{{ producto.price | currency : 'MXN' : 'symbol' }}</td>
+          <td>
+            <span
+              [class.text-danger]="producto.stock < 10"
+              [class.fw-bold]="producto.stock < 10"
+            >
+              {{ producto.stock }} unidades
+            </span>
+          </td>
+          <td class="text-center text-nowrap">
+            <div class="btn-group" role="group" *ngIf="isAdmin">
+              <!-- Botón para abrir modal de edición -->
+              <button
+                class="btn btn-sm btn-outline-secondary"
+                (click)="abrirModalEditar(producto)"
+                title="Editar"
+              >
+                <i class="bi bi-pencil"></i> Editar
+              </button>
+              <!-- Botón para abrir modal de eliminación -->
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="abrirModalEliminar(producto.id)"
+                title="Eliminar"
+              >
+                <i class="bi bi-trash"></i> Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="productos.length === 0">
+          <td colspan="6" class="text-center fst-italic p-4">
+            No se encontraron productos.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 
+  ==================================================================
+  MODAL PARA CREAR / EDITAR PRODUCTO
+  ==================================================================
+-->
+<div
+  class="modal fade"
+  id="productoModal"
+  tabindex="-1"
+  aria-labelledby="productoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productoModalLabel">
+          {{ esModoEdicion ? 'Editar Producto' : 'Nuevo Producto' }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="cerrarModalProducto()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="guardarProducto()">
+          <div class="row">
+            <!-- Columna 1: Campos de texto (Sin cambios) -->
+            <div class="col-md-8">
+              <!-- (Aquí van todos tus campos: nombre, descripción, precio, stock, etc.) -->
+              <div class="mb-3">
+                <label for="name" class="form-label">Nombre del Producto</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  [(ngModel)]="productoSeleccionado.name"
+                  name="name"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea
+                  class="form-control"
+                  id="descripcion"
+                  rows="3"
+                  [(ngModel)]="productoSeleccionado.descripcion"
+                  name="descripcion"
+                ></textarea>
+              </div>
+              <div class="row">
+                <div class="col-6 mb-3">
+                  <label for="price" class="form-label">Precio</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="price"
+                      min="0"
+                      step="0.01"
+                      [(ngModel)]="productoSeleccionado.price"
+                      name="price"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-6 mb-3">
+                  <label for="stock" class="form-label">Stock</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="stock"
+                    min="0"
+                    [(ngModel)]="productoSeleccionado.stock"
+                    name="stock"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="categoria" class="form-label">Categoría</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="categoria"
+                  [(ngModel)]="productoSeleccionado.categoria"
+                  name="categoria"
+                />
+              </div>
+            </div>
+
+            <!-- 
+              Columna 2: Carga de imagen (¡Aquí está el cambio!) 
+            -->
+            <div class="col-md-4">
+              <label class="form-label">Imagen</label>
+              <!-- 
+                Esta es la "Drop Zone". 
+                - (click) simula un clic en el input[type=file] oculto.
+                - [class.is-dragging] aplica un estilo CSS cuando se arrastra algo encima.
+                - (drag...) son los eventos para arrastrar y soltar.
+              -->
+              <div
+                class="drop-zone"
+                (click)="fileInput.click()"
+                [class.is-dragging]="isDragging"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+              >
+                <!-- Vista previa de la imagen -->
+                <img
+                  [src]="getPreviewUrl()"
+                  class="img-thumbnail mb-2"
+                  alt="Vista previa"
+                />
+
+                <span class="drop-zone-text">
+                  Arrastra una imagen aquí o haz clic para seleccionar
+                </span>
+
+                <!-- 
+                  El input de archivo real. Está oculto con CSS, 
+                  pero lo activamos con el (click) del div padre.
+                -->
+                <input
+                  type="file"
+                  #fileInput
+                  class="drop-zone-input"
+                  (change)="onFileChange($event)"
+                  accept="image/png, image/jpeg"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones del formulario (Sin cambios) -->
+          <div class="modal-footer mt-3 pb-0">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cerrarModalProducto()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              {{ esModoEdicion ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 
+  ==================================================================
+  MODAL PARA CONFIRMAR ELIMINACIÓN
+  ==================================================================
+-->
+<div
+  class="modal fade"
+  id="eliminarModal"
+  tabindex="-1"
+  aria-labelledby="eliminarModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="eliminarModalLabel">
+          Confirmar Eliminación
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          (click)="cerrarModalEliminar()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          ¿Estás seguro de que deseas eliminar este producto?
+        </p>
+        <p class="text-danger fw-bold">
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="cerrarModalEliminar()"
+        >
+          Cancelar
+        </button>
+        <!-- Este botón llama a la función de borrado final -->
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="confirmarEliminacion()"
+        >
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

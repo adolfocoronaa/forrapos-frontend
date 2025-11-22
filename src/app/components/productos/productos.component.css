@@ -1,0 +1,43 @@
+/*
+ * Estilos para la zona de "Arrastrar y Soltar" (Drag & Drop)
+ */
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  height: 100%; /* Ocupa toda la altura de la columna */
+}
+
+/* Estado visual cuando el usuario está arrastrando un archivo sobre la zona */
+.drop-zone.is-dragging {
+  background-color: #e3f2fd; /* Un azul claro */
+  border-color: #0d6efd; /* Azul de Bootstrap */
+}
+
+/* Estilo para la imagen de vista previa */
+.drop-zone img {
+  width: 100%;
+  height: 150px; /* Altura fija para la preview */
+  object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
+  border-radius: 4px;
+}
+
+/* El input de archivo real se oculta */
+.drop-zone-input {
+  display: none;
+}
+
+/* Texto de ayuda */
+.drop-zone-text {
+  font-size: 0.9rem;
+  color: #6c757d; /* Color de texto 'muted' de Bootstrap */
+  margin-top: 10px;
+}

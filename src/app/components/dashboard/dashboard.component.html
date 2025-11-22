@@ -1,0 +1,144 @@
+<!-- components/dashboard/dashboard.component.html -->
+<div class="text-center mb-4">
+  <a routerLink="/login">
+    <img src="img/logo.png" alt="Logo de FORRAPOS" class="img-fluid rounded" style="max-width: 150px;">
+  </a>
+</div>
+
+<!-- Loading / Error -->
+<div *ngIf="loading" class="text-center mb-3">Loading dashboard...</div>
+<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+<div *ngIf="stats" class="row">
+  <!-- Tarjeta 1: Ventas Hoy -->
+  <div class="col-xl-3 col-md-6 mb-4">
+    <!-- ¡AÑADE ESTA CLASE 'stat-card-hover'! -->
+    <div class="card stat-card-hover border-left-primary shadow h-100 py-2">
+      <div class="card-body">
+        <div class="row no-gutters align-items-center">
+          <div class="col mr-2">
+            <div
+              class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+            >
+              Ventas de Hoy
+            </div>
+            <div class="h5 mb-0 font-weight-bold text-gray-800">
+              {{ stats.ventasHoy | currency : 'MXN' : 'symbol' }}
+            </div>
+          </div>
+          <div class="col-auto">
+            <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tarjeta 2: Ventas Semana -->
+  <div class="col-xl-3 col-md-6 mb-4">
+    <!-- ¡AÑADE ESTA CLASE 'stat-card-hover'! -->
+    <div class="card stat-card-hover border-left-success shadow h-100 py-2">
+      <div class="card-body">
+        <!-- ... (contenido) ... -->
+        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+          Ventas (Semana)
+        </div>
+        <div class="h5 mb-0 font-weight-bold text-gray-800">
+          {{ stats.ventasSemana | currency : 'MXN' : 'symbol' }}
+        </div>
+        <!-- ... -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Tarjeta 3: Items Vendidos -->
+  <div class="col-xl-3 col-md-6 mb-4">
+    <!-- ¡AÑADE ESTA CLASE 'stat-card-hover'! -->
+    <div class="card stat-card-hover border-left-info shadow h-100 py-2">
+      <div class="card-body">
+        <!-- ... (contenido) ... -->
+        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+          Productos Vendidos (Hoy)
+        </div>
+        <div class="h5 mb-0 font-weight-bold text-gray-800">
+          {{ stats.itemsVendidosHoy }}
+        </div>
+        <!-- ... -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Tarjeta 4: Órdenes Activas -->
+  <div class="col-xl-3 col-md-6 mb-4">
+    <!-- ¡AÑADE ESTA CLASE 'stat-card-hover'! -->
+    <div class="card stat-card-hover border-left-warning shadow h-100 py-2">
+      <div class="card-body">
+        <!-- ... (contenido) ... -->
+        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+          Órdenes Activas
+        </div>
+        <div class="h5 mb-0 font-weight-bold text-gray-800">
+          {{ stats.ordenesActivas }}
+        </div>
+        <!-- ... -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ventas Recientes -->
+<div class="mt-4 card p-4" *ngIf="stats">
+  <h5>Ventas Recientes</h5>
+
+  <table *ngIf="(stats.recentSales?.length ?? 0) > 0; else noSales">
+    <thead>
+      <tr>
+        <th>Orden</th>
+        <th>Cliente</th>
+        <th>Productos</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let sale of stats.recentSales">
+        <td>#{{ sale.ventaId }}</td>
+        <td>{{ sale.cliente }}</td>
+        <td>{{ sale.productosResumen }}</td>
+        <td>{{ sale.total | currency }}</td>
+        <td [ngClass]="{'text-success': sale.estado === 'Completado', 'text-warning': sale.estado === 'Procesando'}">
+          {{ sale.estado }}
+        </td>
+        <td>{{ formatShortDate(sale.fecha) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noSales>
+    <div class="text-muted">No hay ventas recientes.</div>
+  </ng-template>
+</div>
+
+<!-- Alertas e Empleados -->
+<div class="row mt-4" *ngIf="stats">
+  <div class="col-md-6">
+    <div class="card p-4">
+      <h5 class="text-danger">Alertas de Inventario</h5>
+      <ul class="list-unstyled">
+        <li *ngFor="let a of stats.alertas" [ngClass]="{'text-danger': a.stock <= 2, 'text-warning': a.stock > 2}">
+          • {{ a.name }} — stock: {{ a.stock }}
+        </li>
+        <li *ngIf="!stats.alertas || stats.alertas.length === 0" class="text-muted">Sin alertas</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card p-4">
+      <h5>Empleados Activos</h5>
+      <p *ngFor="let e of stats.activeEmployees ?? []" class="text-success">● {{ e.nombre }} ({{ e.rol }})</p>
+      <div *ngIf="!(stats.activeEmployees && stats.activeEmployees.length) " class="text-muted">No hay empleados activos</div>
+    </div>
+  </div>
+</div>

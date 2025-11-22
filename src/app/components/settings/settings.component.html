@@ -1,0 +1,27 @@
+<h2>Configuración</h2>
+<hr>
+
+<div class="setting-row">
+  <h3>Tema de la Aplicación</h3>
+  <p>Elige tu preferencia visual.</p>
+  
+  <div class="planet-toggle-container">
+    <button 
+      class="planet-half light-side" 
+      (click)="setLightMode()" 
+      title="Activar Modo Claro"
+      [class.active]="(isDarkMode$ | async) === false">
+      <i class="fa-solid fa-sun"></i>
+      <span>Claro</span>
+    </button>
+    
+    <button 
+      class="planet-half dark-side" 
+      (click)="setDarkMode()"
+      title="Activar Modo Oscuro"
+      [class.active]="(isDarkMode$ | async) === true">
+      <i class="fa-solid fa-moon"></i>
+      <span>Oscuro</span>
+    </button>
+  </div>
+</div>

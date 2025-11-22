@@ -1,0 +1,136 @@
+<div class="container-fluid mt-4">
+  <h2 class="mb-4">Reportes y Estadísticas</h2>
+
+  <!-- 
+    Navegación de Pestañas (Tabs) de Bootstrap 
+  -->
+  <ul class="nav nav-tabs mb-3" id="statsTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'ventas'"
+        (click)="seleccionarPestana('ventas')"
+        type="button"
+      >
+        <i class="bi bi-graph-up-arrow"></i> Ventas
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'compras'"
+        (click)="seleccionarPestana('compras')"
+        type="button"
+      >
+        <i class="bi bi-cart4"></i> Compras
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'finanzas'"
+        (click)="seleccionarPestana('finanzas')"
+        type="button"
+      >
+        <i class="bi bi-cash-coin"></i> Finanzas (Ingreso vs Costo)
+      </button>
+    </li>
+  </ul>
+
+  <!-- 
+    Contenido de las Pestañas 
+  -->
+  <div class="tab-content" id="statsTabContent">
+    <!-- 
+      Pestaña 1: VENTAS 
+    -->
+    <div
+      class="tab-pane fade"
+      [class.show]="activeTab === 'ventas'"
+      [class.active]="activeTab === 'ventas'"
+    >
+      <div *ngIf="!reporteVentas" class="text-center p-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+      <div *ngIf="reporteVentas" class="row">
+        <div class="col-lg-8 mb-4">
+          <div class="card shadow">
+            <div class="card-header">Ventas Totales por Mes (Año Actual)</div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="chartVentasPorMes"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow">
+            <div class="card-header">Top 5 Productos Vendidos</div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="chartTopProductosVendidos"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 
+      Pestaña 2: COMPRAS 
+    -->
+    <div
+      class="tab-pane fade"
+      [class.show]="activeTab === 'compras'"
+      [class.active]="activeTab === 'compras'"
+    >
+      <div *ngIf="!reporteCompras" class="text-center p-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+      <div *ngIf="reporteCompras" class="row">
+        <div class="col-12 mb-4">
+          <div class="card shadow">
+            <div class="card-header">Compras Totales por Mes (Año Actual)</div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="chartComprasPorMes"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- (Aquí podrías añadir más gráficas: top proveedores, etc.) -->
+      </div>
+    </div>
+
+    <!-- 
+      Pestaña 3: FINANZAS 
+    -->
+    <div
+      class="tab-pane fade"
+      [class.show]="activeTab === 'finanzas'"
+      [class.active]="activeTab === 'finanzas'"
+    >
+      <div *ngIf="!reporteFinanciero" class="text-center p-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+      <div *ngIf="reporteFinanciero" class="row">
+        <div class="col-12 mb-4">
+          <div class="card shadow">
+            <div class="card-header">Ingresos vs Costos vs Ganancia (Año Actual)</div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="chartFinanzas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
