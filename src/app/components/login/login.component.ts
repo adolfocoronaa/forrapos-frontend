@@ -118,7 +118,20 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Error al iniciar sesión.';
+        // Intenta leer el mensaje del objeto JSON (err.error.message)
+        let apiMessage = err.error?.message; 
+
+        // Si falla el JSON o la propiedad 'message' no existe:
+        if (!apiMessage) {
+            // Si err.error es una cadena de texto (a veces ocurre con 401/403)
+            if (typeof err.error === 'string' && err.error.length > 0) {
+                apiMessage = err.error;
+            } else if (err.status === 401) {
+                // Si el estado es 401 y no hay mensaje en el body, usa el mensaje de seguridad
+                apiMessage = 'Usuario o contraseña no válidos. Inténtalo de nuevo.';
+            }
+        }
+        this.errorMessage = apiMessage || 'Error desconocido al iniciar sesión.';
       }
     });
   }
