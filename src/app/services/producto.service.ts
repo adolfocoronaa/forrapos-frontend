@@ -16,7 +16,8 @@ import { Producto } from '../components/productos/productos.model';
   providedIn: 'root',
 })
 export class ProductoService {
-  private apiUrl = 'https://forrapos-api-backend-fqfkhkgvebd6deah.mexicocentral-01.azurewebsites.net/api/productos';
+  public apiUrlBase = 'https://forrapos-api-backend-fqfkhkgvebd6deah.mexicocentral-01.azurewebsites.net';
+  private apiUrl = `${this.apiUrlBase}/api/productos`;
 
   constructor(private http: HttpClient) {}
 

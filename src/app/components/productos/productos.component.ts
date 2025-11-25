@@ -129,7 +129,7 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       return this.imagenPreviewUrl;
     }
     if (this.esModoEdicion && this.productoSeleccionado.imagenUrl) {
-      return this.productoSeleccionado.imagenUrl;
+      return `${this.productoService.apiUrlBase}${this.productoSeleccionado.imagenUrl}`;
     }
     // Si tienes tu 'placeholder.png' en 'assets/img/placeholder.png'
     // return 'assets/img/placeholder.png';
