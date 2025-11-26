@@ -14,18 +14,15 @@ declare var bootstrap: any;
   styleUrls: ['./productos.component.css'],
 })
 export class ProductosComponent implements OnInit, AfterViewInit {
-  // --- ¡CAMBIOS AQUÍ! ---
   // 'productos' ahora será la LISTA FILTRADA que se muestra en la tabla.
   productos: Producto[] = [];
   // 'productosCompletos' guardará la lista original del backend.
   productosCompletos: Producto[] = [];
   // 'terminoBusqueda' está vinculado al input del HTML.
   terminoBusqueda: string = '';
-  // --- Fin de Cambios ---
 
   isAdmin: boolean = false;
 
-  // ... (Variables de modales sin cambios)
   private modalProductoElement: any;
   modalProducto: any;
   productoSeleccionado: any = {};
@@ -37,7 +34,7 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   productoIdAEliminar: number | null = null;
   isDragging: boolean = false;
 
-  constructor(private productoService: ProductoService) {}
+  constructor(private productoService: ProductoService) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -48,7 +45,6 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // ... (Inicialización de modales sin cambios)
     this.modalProductoElement = document.getElementById('productoModal');
     if (this.modalProductoElement) {
       this.modalProducto = new bootstrap.Modal(this.modalProductoElement, {
@@ -62,7 +58,6 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // --- ¡CAMBIOS AQUÍ! ---
   cargarProductos(): void {
     this.productoService.getProductos().subscribe({
       next: (data) => {
@@ -75,7 +70,6 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // --- ¡FUNCIÓN NUEVA! ---
   /**
    * Filtra la lista de productos basándose en el 'terminoBusqueda'.
    * Se ejecuta cada vez que el usuario escribe en el input.
@@ -95,12 +89,12 @@ export class ProductosComponent implements OnInit, AfterViewInit {
         const nombreMatch = producto.name
           .toLowerCase()
           .includes(filtro);
-          
+
         // Comprueba si está en la descripción (manejando si es null)
         const descMatch = producto.descripcion
           ? producto.descripcion.toLowerCase().includes(filtro)
           : false;
-          
+
         // Comprueba si está en la categoría (manejando si es null)
         const catMatch = producto.categoria
           ? producto.categoria.toLowerCase().includes(filtro)
@@ -111,29 +105,31 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // ... (Todas tus demás funciones: getPreviewUrl, onDragOver, onDrop, onFileChange,
-  //      guardarProducto, abrirModalCrear, abrirModalEditar, cerrarModalProducto,
-  //      abrirModalEliminar, cerrarModalEliminar, confirmarEliminacion...
-  //      PERMANECEN EXACTAMENTE IGUAL)
-
-  // ¡Revisión importante!
-  // Tus funciones 'guardarProducto' y 'confirmarEliminacion' ya llaman
-  // a 'this.cargarProductos()' al terminar.
-  // 'cargarProductos' ahora obtiene la nueva lista Y aplica el filtro.
-  // ¡Esto es perfecto! El filtro se mantendrá incluso después de editar o crear.
-
-  // ... (El resto de tu lógica de modales) ...
-
+  // 🛑 FUNCIÓN CORREGIDA PARA EVITAR LA DOBLE CONCATENACIÓN 🛑
   getPreviewUrl(): string {
+    // 1. Si el usuario ha seleccionado una nueva imagen, muestra la vista previa local.
     if (this.imagenPreviewUrl) {
       return this.imagenPreviewUrl;
     }
+
+    // 2. Si estamos editando y tenemos una URL:
     if (this.esModoEdicion && this.productoSeleccionado.imagenUrl) {
-      return `${this.productoService.apiUrlBase}${this.productoSeleccionado.imagenUrl}`;
+      const url = this.productoSeleccionado.imagenUrl;
+
+      // Si la URL que viene del backend YA ES ABSOLUTA (empieza con http), la usamos directamente.
+      if (url.startsWith('http') || url.startsWith('https')) {
+        return url; // Esto evita la doble concatenación
+      }
+
+      // Si es una ruta relativa (empieza con /), la concatenamos
+      if (url.startsWith('/')) {
+        // Nos aseguramos de limpiar la barra final de la URL base para evitar '//'
+        const baseLimpia = this.productoService.apiUrlBase.trimEnd('/');
+        return baseLimpia + url;
+      }
     }
-    // Si tienes tu 'placeholder.png' en 'assets/img/placeholder.png'
-    // return 'assets/img/placeholder.png';
-    // Si no, usa el placeholder web:
+
+    // 3. Placeholder por defecto
     return 'https://placehold.co/300x200/e9ecef/6c757d?text=Sin+Imagen';
   }
 
@@ -266,4 +262,3 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     }
   }
 }
-
