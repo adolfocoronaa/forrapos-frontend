@@ -30,7 +30,7 @@ export class VentasComponent implements OnInit {
   ventaSeleccionada: Venta | null = null;
   mostrarModalDetalles: boolean = false;
   isAdmin: boolean = false;
-  
+
   usoCfdiLabels: { [clave: string]: string } = {
     G01: 'G01 - Adquisición de mercancías',
     G02: 'G02 - Devoluciones, descuentos o bonificaciones',
@@ -55,7 +55,7 @@ export class VentasComponent implements OnInit {
     D10: 'D10 - Servicios educativos (colegiaturas)',
     P01: 'P01 - Por definir'
   };
-  
+
   meses: string[] = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -81,7 +81,7 @@ export class VentasComponent implements OnInit {
   filtroMax: number | null = null;
   filtroProducto: string = '';
 
-  constructor(private ventasService: VentasService, private toast: ToastService, private pdfService: PdfService) {}
+  constructor(private ventasService: VentasService, private toast: ToastService, private pdfService: PdfService) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined' && window.localStorage) {
@@ -98,20 +98,20 @@ export class VentasComponent implements OnInit {
 
   cargarVentas() {
     const params: any = {};
-  
+
     if (this.filtroYear) params.year = this.filtroYear;
     if (this.filtroMes && this.filtroMes !== 'Todo') params.mes = this.meses.indexOf(this.filtroMes) + 1;
     if (this.filtroEstado) params.estado = this.filtroEstado;
     if (this.filtroMin != null) params.minTotal = this.filtroMin;
     if (this.filtroMax != null) params.maxTotal = this.filtroMax;
     if (this.filtroProducto) params.producto = this.filtroProducto;
-  
+
     this.ventasService.getVentasFiltradas(params).subscribe(data => {
       this.ventas = data;
       this.ventasFiltradas = data;
     });
   }
-  
+
 
   cargarProductos() {
     this.ventasService.getProductos().subscribe(data => {
@@ -125,18 +125,18 @@ export class VentasComponent implements OnInit {
       year: this.filtroYear,
       mes: this.filtroMes === 'Todo' || !this.filtroMes
         ? ''
-        : this.meses.indexOf(this.filtroMes) + 1, 
+        : this.meses.indexOf(this.filtroMes) + 1,
       minTotal: this.filtroMin,
       maxTotal: this.filtroMax,
       producto: this.filtroProducto
     };
-  
+
     this.ventasService.getVentasFiltradas(filtros).subscribe(data => {
       this.ventasFiltradas = data;
       this.paginaActual = 1;
     });
   }
-  
+
 
   limpiarFiltros() {
     this.filtroEstado = '';
@@ -151,6 +151,14 @@ export class VentasComponent implements OnInit {
 
   agregarProducto() {
     if (!this.productoSeleccionado || this.cantidadSeleccionada < 1) return;
+
+    // Validación de stock previa en el frontend (para mejor UX, pero el backend es la autoridad)
+    const productoEnLista = this.productos.find(p => p.id === this.productoSeleccionado.id);
+
+    if (productoEnLista && this.cantidadSeleccionada > productoEnLista.stock) {
+      this.toast.showError(`Stock insuficiente para ${productoEnLista.name}. Disponible: ${productoEnLista.stock}`);
+      return;
+    }
 
     const detalle = {
       productoId: this.productoSeleccionado.id,
@@ -194,28 +202,37 @@ export class VentasComponent implements OnInit {
       }))
     };
 
-      // Validación básica
+    // Validación de campos obligatorios (Reemplazo de alert por toast)
     if (!payload.metodoPago || payload.detalles.length === 0) {
-      alert('Debe seleccionar un método de pago y al menos un producto.');
+      this.toast.showError('Debe seleccionar un método de pago y al menos un producto.');
       return;
     }
 
-    this.ventasService.crearVenta(payload).subscribe(() => {
-      this.nuevaVenta = { 
-        metodoPago: '', 
-        total: 0, 
-        detalles: [],
-        cliente: '',
-        rfc: '',
-        razonSocial: '',
-        direccionFiscal: '',
-        correoFactura: '',
-        usoCfdi: '',
-      };
-    
-      this.cargarVentas();
-    }, (error) => {
-      alert('Error: Verifica los datos ingresados.');
+    this.ventasService.crearVenta(payload).subscribe({
+      next: () => {
+        // 🛑 Éxito (Uso de ToastService)
+        this.toast.showSuccess('Venta registrada y stock actualizado correctamente.');
+
+        this.nuevaVenta = {
+          metodoPago: '',
+          total: 0,
+          detalles: [],
+          cliente: '',
+          rfc: '',
+          razonSocial: '',
+          direccionFiscal: '',
+          correoFactura: '',
+          usoCfdi: '',
+        };
+
+        this.cargarVentas();
+        this.cargarProductos(); // Recargar productos para actualizar stock en frontend
+      },
+      error: (error) => {
+        // 🛑 Manejo de error de Stock (Uso de ToastService)
+        const errorMessage = error.error?.mensaje || 'Error desconocido al registrar la venta.';
+        this.toast.showError(errorMessage);
+      }
     });
   }
 
@@ -265,10 +282,12 @@ export class VentasComponent implements OnInit {
 
 
   eliminarVenta(venta: Venta) {
+    // Nota: se recomienda reemplazar 'confirm' por un modal de Bootstrap personalizado
     if (confirm(`¿Eliminar venta ${venta.folio}?`)) {
       this.ventasService.eliminarVenta(venta.id).subscribe(() => {
-        this.toast.showSuccess('Venta eliminada exitosamente');
+        this.toast.showSuccess('Venta eliminada y stock devuelto exitosamente');
         this.cargarVentas();
+        this.cargarProductos(); // Recargar productos para reflejar el stock devuelto
       }, err => {
         this.toast.showError('Error al eliminar la venta');
       });
@@ -279,7 +298,7 @@ export class VentasComponent implements OnInit {
     this.ventaSeleccionada = venta;
     this.mostrarModalDetalles = true;
   }
-  
+
   duplicarVenta(venta: Venta) {
     const payload = {
       metodoPago: venta.estado === "Completado" ? venta.metodoPago : '',
@@ -295,7 +314,7 @@ export class VentasComponent implements OnInit {
         precioUnitario: d.precioUnitario
       }))
     };
-  
+
     this.ventasService.crearVenta(payload).subscribe(() => {
       // Se despliega el mensaje que se pudo duplicar la venta exitosamente
       this.toast.showSuccess('Venta duplicada correctamente');
@@ -304,8 +323,8 @@ export class VentasComponent implements OnInit {
       this.toast.showError('Error al duplicar la venta');
     });
   }
-  
-  
+
+
   enviarPorCorreo(venta: Venta) {
     // Abrir cliente de correo con datos prellenados
     const correo = encodeURIComponent(venta.correoFactura || '');
@@ -313,7 +332,7 @@ export class VentasComponent implements OnInit {
     const cuerpo = encodeURIComponent(`Hola,\n\nAdjunto la factura correspondiente a la venta ${venta.folio}.\n\nPor favor revisa el archivo PDF descargado.\n\nSaludos.`);
     window.location.href = `mailto:${correo}?subject=${asunto}&body=${cuerpo}`;
   }
-  
+
   imprimirVenta(venta: Venta) {
     const doc = this.pdfService.generarPdf(venta);
     const blob = doc.output('blob');
@@ -325,20 +344,20 @@ export class VentasComponent implements OnInit {
       };
     }
   }
-  
+
   guardarVenta(v: any) {
     const detallesValidos = v.detalles.map((d: any) => ({
       productoId: d.productoId,
       cantidad: d.cantidad,
       precioUnitario: d.precioUnitario
     }));
-  
+
     const payload = {
       fecha: v.fecha,
       metodoPago: v.metodoPago,
       detalles: detallesValidos
     };
-  
+
     this.ventasService.actualizarVenta(v.id, payload).subscribe(() => {
       this.toast.showSuccess('Venta actualizada exitosamente');
       v.editando = false;
@@ -360,7 +379,7 @@ export class VentasComponent implements OnInit {
 
   recalcularTotal(venta: any) {
     venta.total = venta.detalles.reduce((sum: number, d: any) => sum + (d.cantidad * d.precioUnitario), 0);
-  }  
+  }
 
   // Function to get a product by Name
   obtenerProductoIdPorNombre(nombre: string): number {
