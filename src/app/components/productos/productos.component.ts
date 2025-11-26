@@ -105,7 +105,7 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // 🛑 FUNCIÓN CORREGIDA PARA EVITAR LA DOBLE CONCATENACIÓN 🛑
+  // 🛑 FUNCIÓN CORREGIDA PARA EVITAR LA DOBLE CONCATENACIÓN Y EL ERROR TS2554 🛑
   getPreviewUrl(): string {
     // 1. Si el usuario ha seleccionado una nueva imagen, muestra la vista previa local.
     if (this.imagenPreviewUrl) {
@@ -123,8 +123,11 @@ export class ProductosComponent implements OnInit, AfterViewInit {
 
       // Si es una ruta relativa (empieza con /), la concatenamos
       if (url.startsWith('/')) {
-        // Nos aseguramos de limpiar la barra final de la URL base para evitar '//'
-        const baseLimpia = this.productoService.apiUrlBase.trimEnd('/');
+        const base = this.productoService.apiUrlBase;
+        // Nos aseguramos de limpiar la barra final de la URL base
+        // Usamos endsWith y slice para evitar el error ts(2554)
+        const baseLimpia = base.endsWith('/') ? base.slice(0, -1) : base;
+
         return baseLimpia + url;
       }
     }
